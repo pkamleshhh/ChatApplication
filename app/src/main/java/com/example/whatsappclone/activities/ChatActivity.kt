@@ -233,6 +233,7 @@ class ChatActivity : AppCompatActivity() {
                         messagesData.add(msg)
                     }
                     adapterRvMessages!!.notifyDataSetChanged()
+                    binding!!.rvChatMessages.scrollToPosition(messagesData.size-1)
                     dialog!!.dismiss()
                 }
 

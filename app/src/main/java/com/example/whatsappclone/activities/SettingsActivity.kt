@@ -4,41 +4,46 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.LiveFolders.INTENT
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.whatsappclone.R
 import com.example.whatsappclone.constants.Constants
-import com.example.whatsappclone.constants.Constants.INTENT_KEY_FOR_UID
-import com.example.whatsappclone.constants.Constants.MSG_SETTING_UP_PROFILE
+import com.example.whatsappclone.constants.Constants.NODE_NAME_PROFILES
 import com.example.whatsappclone.constants.Constants.NODE_NAME_USERS
-import com.example.whatsappclone.constants.Constants.REQUEST_CODE_PROFILE
 import com.example.whatsappclone.constants.Constants.REQUEST_CODE_SETTING
+import com.example.whatsappclone.constants.Constants.UPDATING_PROFILE_MSG
 import com.example.whatsappclone.databinding.ActivitySettingsBinding
-import com.example.whatsappclone.models.UserStatus
 import com.example.whatsappclone.models.Users
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
+import java.util.*
 
 @Suppress("DEPRECATION")
 class SettingsActivity : AppCompatActivity() {
     private var binding: ActivitySettingsBinding? = null
     private var userId: String? = null
-    private var dataBase: FirebaseDatabase? = null
+    private var database: FirebaseDatabase? = null
     private var storage: FirebaseStorage? = null
     private var dialog: ProgressDialog? = null
     private var fileUri: Uri? = null
+    private var userObject: Users? = null
+    private var dataChanged: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
-        userId = intent.getStringExtra(INTENT_KEY_FOR_UID)!!
+        userId = FirebaseAuth.getInstance().uid
 
         //Set user's particulars.
         getUserData()
@@ -54,7 +59,28 @@ class SettingsActivity : AppCompatActivity() {
             startActivityForResult(intent, REQUEST_CODE_SETTING)
         }
         binding!!.btnSave.setOnClickListener {
-
+            openDialog(UPDATING_PROFILE_MSG)
+            userObject!!.userName = binding!!.etUsername.text.toString()
+            userObject!!.userStatus = binding!!.etAbout.text.toString()
+            storage = FirebaseStorage.getInstance()
+            var storageReference =
+                storage!!.reference.child(NODE_NAME_PROFILES).child(userId!!)
+            storageReference.putFile(fileUri!!)
+                .addOnCompleteListener(OnCompleteListener<UploadTask.TaskSnapshot?> { task ->
+                    if (task.isSuccessful) {
+                        storageReference.downloadUrl
+                            .addOnSuccessListener(OnSuccessListener<Uri> {
+                                userObject!!.profilePic=it.toString()
+                                database!!.reference
+                                    .child(NODE_NAME_USERS)
+                                    .child(userId!!)
+                                    .setValue(userObject)
+                                    .addOnSuccessListener {
+                                        dialog!!.dismiss()
+                                    }
+                            })
+                    }
+                })
         }
     }
 
@@ -62,6 +88,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (data!!.data != null) {
             fileUri = data!!.data!!
+            dataChanged = true
             binding!!.ivAvatar.setImageURI(fileUri)
         }
     }
@@ -73,34 +100,31 @@ class SettingsActivity : AppCompatActivity() {
         dialog!!.show()
     }
 
-    private fun setParticulars(userProfilePic: String, userName: String, userStatus: String) {
-        Glide.with(this).load(userProfilePic).placeholder(R.drawable.avatar)
+    private fun setParticulars(userObject: Users) {
+        Glide.with(this).load(userObject.profilePic).placeholder(R.drawable.avatar)
             .into(binding!!.ivAvatar)
-        binding!!.etUsername.setText(userName)
-        binding!!.etAbout.setText(userStatus)
+        binding!!.etUsername.setText(userObject.userName)
+        binding!!.etAbout.setText(userObject.userStatus)
     }
 
     private fun getUserData() {
-        dataBase = FirebaseDatabase.getInstance()
-        dataBase!!.reference.child(NODE_NAME_USERS)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+        database = FirebaseDatabase.getInstance()
+        database!!.reference.child(NODE_NAME_USERS)
+            .addValueEventListener(object : ValueEventListener {
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         for (data: DataSnapshot in snapshot.children) {
-                            val userProfilePic = data.child("profilePic").value.toString()
-                            val userName = data.child("userName").value.toString()
-                            val userStatus = data.child("userStatus").value.toString()
-                            setParticulars(userProfilePic, userName, userStatus)
+                            userObject = data.getValue(Users::class.java)
+                            if (userObject!!.userId == userId) {
+                                setParticulars(userObject!!)
+                                break
+                            }
                         }
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
             })
-    }
-
-    private fun ta(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

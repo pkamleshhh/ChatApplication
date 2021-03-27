@@ -25,6 +25,7 @@ object Constants {
     const val CONTENT_TYPE = "image/*"
     const val LOADING_MSG = "Loading..."
     const val UPLOADING_MSG="Uploading Image.."
+    const val UPDATING_PROFILE_MSG="Updating Profile.."
     const val INTENT_CODE_FOR_STATUS_MEDIA = 10
     const val ENCRYPTION_ALGORITHM="AES"
     const val INTENT_CODE_FOR_ATTACHMENT_MEDIA=11

@@ -15,6 +15,17 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/no_users_available"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:visibility="gone"
+        android:textSize="@dimen/_18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChatRows"
         android:layout_width="match_parent"

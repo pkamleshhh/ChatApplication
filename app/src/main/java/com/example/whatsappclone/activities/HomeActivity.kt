@@ -34,6 +34,7 @@ import com.example.whatsappclone.constants.Constants.INTENT_CODE_FOR_STATUS_MEDI
 import com.example.whatsappclone.constants.Constants.INTENT_KEY_FOR_UID
 import com.example.whatsappclone.constants.Constants.LOADING_MSG
 import com.example.whatsappclone.constants.Constants.NODE_NAME_USERS
+import com.example.whatsappclone.constants.Constants.STATUS_ONLINE
 import com.google.firebase.storage.FirebaseStorage
 
 
@@ -44,15 +45,15 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
     private var dataBase: FirebaseDatabase? = null
     private var usersData = ArrayList<Users>()
     private var usersStatusData = ArrayList<UserStatus>()
-    private var adapterRvRvChatRows: AdapterRvChatRows? = null
-    private var adapterRvRvUsersStatus: AdapterRvTopStatus? = null
+    private var adapterRvChatRows: AdapterRvChatRows? = null
+    private var adapterRvUsersStatus: AdapterRvTopStatus? = null
     private var dialog: ProgressDialog? = null
-    private var userId:String?=null
+    private var userId: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
-        userId=intent.getStringExtra(INTENT_KEY_FOR_UID)
+        userId = intent.getStringExtra(INTENT_KEY_FOR_UID)
 
         //Show the progress dialog.
         openDialog()
@@ -91,7 +92,8 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
                             }
                         }
                     }
-                    adapterRvRvChatRows!!.notifyDataSetChanged()
+                    adapterRvChatRows!!.notifyDataSetChanged()
+                    checkRv()
                     dialog!!.dismiss()
                 }
 
@@ -100,16 +102,22 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
 
     }
 
+    private fun checkRv() {
+        if (usersData.size == 0) {
+            binding!!.rvChatRows
+        }
+    }
+
     private fun init() {
         auth = FirebaseAuth.getInstance()
         dataBase = FirebaseDatabase.getInstance()
-        adapterRvRvChatRows = AdapterRvChatRows(this, usersData, auth!!.uid!!)
-        binding!!.rvChatRows.adapter = adapterRvRvChatRows
+        adapterRvChatRows = AdapterRvChatRows(this, usersData, auth!!.uid!!)
+        binding!!.rvChatRows.adapter = adapterRvChatRows
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = RecyclerView.HORIZONTAL
         binding!!.rvUsersStatuses.layoutManager = layoutManager
-        adapterRvRvUsersStatus = AdapterRvTopStatus(this, usersStatusData)
-        binding!!.rvUsersStatuses.adapter = adapterRvRvUsersStatus
+        adapterRvUsersStatus = AdapterRvTopStatus(this, usersStatusData)
+        binding!!.rvUsersStatuses.adapter = adapterRvUsersStatus
     }
 
     private fun openDialog() {
@@ -119,20 +127,11 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
         dialog!!.show()
     }
 
-    override fun onActivityReenter(resultCode: Int, data: Intent?) {
-        if (data!!.data != null) {
-            val firebaseStorage = FirebaseStorage.getInstance()
-
-
-        }
-        super.onActivityReenter(resultCode, data)
-    }
-
     override fun onResume() {
         super.onResume()
         val currentId = FirebaseAuth.getInstance().uid
         dataBase!!.reference.child(Constants.NODE_NAME_STATUS).child(currentId!!)
-            .setValue(Constants.STATUS_ONLINE)
+            .setValue(STATUS_ONLINE)
     }
 
     override fun onPause() {
@@ -160,8 +159,7 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
 
             }
             com.example.whatsappclone.R.id.settings -> {
-                val intent=Intent(this,SettingsActivity::class.java)
-                intent.putExtra(INTENT_KEY_FOR_UID,FirebaseAuth.getInstance().uid )
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             }
         }
