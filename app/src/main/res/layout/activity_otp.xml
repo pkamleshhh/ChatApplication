@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/_5dp"
+    android:elevation="@dimen/_10dp"
+    android:padding="@dimen/_30dp"
+    tools:context=".activities.OtpActivity">
+
+    <ImageView
+        android:id="@+id/ivLogoPhoneVerification"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_verification"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvVerifyPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/verify_your_phone_number"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/ivLogoPhoneVerification" />
+
+    <TextView
+        android:id="@+id/tvInfoPhoneVerification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/info"
+        android:textSize="@dimen/_12sp"
+        app:layout_constraintTop_toBottomOf="@id/tvVerifyPhone" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_5dp"
+        android:elevation="@dimen/_10dp"
+        app:cardCornerRadius="@dimen/_10dp"
+        app:cardElevation="@dimen/_5dp"
+        app:cardMaxElevation="@dimen/_5dp"
+        app:layout_constraintTop_toBottomOf="@id/tvInfoPhoneVerification"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_10dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="7"
+                android:gravity="center"
+                >
+                <com.chaos.view.PinView
+                    android:id="@+id/otpPinView"
+                    style="@style/PinWidget.PinView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="true"
+                    android:inputType="numberPassword"
+                    android:padding="@dimen/_2dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:cursorColor="@color/black"
+                    app:cursorWidth="2dp"
+                    app:hideLineWhenFilled="true"
+                    app:itemCount="6"
+                    app:itemHeight="48dp"
+                    app:itemRadius="@dimen/_4dp"
+                    app:itemSpacing="@dimen/_4dp"
+                    app:itemWidth="48dp"
+                    app:lineColor="@color/greenDark"
+                    app:lineWidth="1dp"
+                    app:viewType="rectangle" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/btnContinue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5dp"
+                android:background="@drawable/selector_btn_signup"
+                android:text="@string/cont"
+                android:textColor="@color/lightGrey" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

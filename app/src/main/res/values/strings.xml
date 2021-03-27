@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">WhatsAppClone</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="signup">SignUp</string>
+    <string name="google">GOOGLE</string>
+    <string name="facebook">FACEBOOK</string>
+    <string name="sign_up_using_phone">Sign Up Using Phone</string>
+    <string name="click_for_sign_up">Click for Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="verify_your_phone_number">Verify your phone number.</string>
+    <string name="info">We will send you an SMS to verify your phone number.</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="cont">Continue</string>
+    <string name="welcome">Welcome</string>
+    <string name="sample_name">Sample Name</string>
+    <string name="sample_time">06:21 PM</string>
+    <string name="tap_to_chat">Tap to chat</string>
+    <string name="profile_info">Profile Info</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="setup_profile">Setup Profile</string>
+    <string name="profile_setup_instructions">Please enter name and select an image.</string>
+    <string name="type_a_message">Type a message..</string>
+    <string name="username">Username</string>
+    <string name="about">About</string>
+    <string name="save">Save</string>
+    <string name="invite_a_friend">Invite a Friend</string>
+    <string name="about_us">About Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="notification">Notification</string>
+    <string name="help">Help</string>
+</resources>

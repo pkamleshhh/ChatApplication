@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/_30dp"
+    tools:context=".activities.SIgnInActivity">
+
+    <ImageView
+        android:id="@+id/ivLogoSignIn"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_whatsapp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etEmailSignIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/selector_et_signup"
+        android:gravity="center_horizontal"
+        android:hint="@string/email"
+        android:padding="@dimen/_5dp"
+        app:layout_constraintTop_toBottomOf="@id/ivLogoSignIn" />
+
+    <EditText
+        android:id="@+id/etPasswordSignIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/selector_et_signup"
+        android:gravity="center_horizontal"
+        android:hint="@string/password"
+        android:padding="@dimen/_5dp"
+        app:layout_constraintTop_toBottomOf="@id/etEmailSignIn" />
+
+    <TextView
+        android:id="@+id/tvHasAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="@string/click_for_sign_up"
+        app:layout_constraintBottom_toTopOf="@id/containerBtnSignIn"
+        app:layout_constraintTop_toBottomOf="@id/etPasswordSignIn" />
+
+    <LinearLayout
+        android:id="@+id/containerBtnSignIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintBottom_toTopOf="@id/partition"
+        app:layout_constraintTop_toBottomOf="@id/tvHasAccount">
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_btn_signup"
+            android:text="@string/sign_in"
+            android:textColor="@color/lightGrey" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/partition"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/containerButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="7"
+        app:layout_constraintTop_toBottomOf="@id/partition">
+
+        <Button
+            android:id="@+id/btnGoogleSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="@drawable/selector_btn_google_signup"
+            android:drawableStart="@drawable/ic_google_logo"
+            android:padding="@dimen/_5dp"
+            android:text="@string/google"
+            android:textColor="@color/black" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"></LinearLayout>
+
+        <Button
+            android:id="@+id/btnFacebookSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="@drawable/selector_btn_fb_signup"
+            android:drawableStart="@drawable/ic_facebook"
+            android:padding="@dimen/_5dp"
+            android:text="@string/facebook"
+            android:textColor="@color/lightGrey" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPhoneSignUp2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5dp"
+        android:gravity="center_horizontal"
+        android:text="@string/sign_up_using_phone"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/containerButtons" />
+</androidx.constraintlayout.widget.ConstraintLayout>
