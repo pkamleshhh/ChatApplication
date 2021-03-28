@@ -15,16 +15,14 @@ import com.example.whatsappclone.constants.Constants.DATE_PATTERN
 import com.example.whatsappclone.constants.Constants.INTENT_KEY_FOR_NAME
 import com.example.whatsappclone.constants.Constants.INTENT_KEY_FOR_PRO_PIC
 import com.example.whatsappclone.constants.Constants.INTENT_KEY_FOR_UID
+import com.example.whatsappclone.constants.Constants.MESSAGE_PHOTO
 import com.example.whatsappclone.constants.Constants.NODE_NAME_CHATS
 import com.example.whatsappclone.constants.Constants.NODE_NAME_MESSAGE
 import com.example.whatsappclone.constants.Constants.NODE_NAME_MESSAGES
 import com.example.whatsappclone.constants.Constants.NODE_NAME_TIME_STAMP
 import com.example.whatsappclone.models.Users
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import java.nio.charset.Charset
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
@@ -40,7 +38,7 @@ import kotlin.collections.ArrayList
 class AdapterRvChatRows(
     private val context: Context,
     private val usersData: ArrayList<Users> = ArrayList(),
-    private val uId: String
+    private val itemClicked: ItemClicked
 ) :
     RecyclerView.Adapter<AdapterRvChatRows.ViewHolder>() {
     private var deCipher: Cipher? = null
@@ -63,37 +61,48 @@ class AdapterRvChatRows(
             .child(NODE_NAME_MESSAGES)
             .orderByChild(NODE_NAME_TIME_STAMP)
             .limitToLast(1)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 @SuppressLint("SimpleDateFormat")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.hasChildren()) {
                         for (data: DataSnapshot in snapshot.children) {
-                            val lastMsg = data.child(NODE_NAME_MESSAGE).value.toString()
+                            var lastMsg = data.child(NODE_NAME_MESSAGE).value.toString()
                             val timeLastMsg =
                                 data.child(NODE_NAME_TIME_STAMP).getValue(Long::class.java)
                             val dateFormat = SimpleDateFormat(DATE_PATTERN)
-                            holder.tvLastMessage.text = decryptMessage(lastMsg)
+                            lastMsg = decryptMessage(lastMsg)
+                            holder.tvLastMessage.text = lastMsg
+                            if (lastMsg == MESSAGE_PHOTO) {
+                                holder.tvLastMessage.setCompoundDrawablesWithIntrinsicBounds(
+                                    R.drawable.photo_icon_small,
+                                    0,
+                                    0,
+                                    0
+                                )
+                            } else {
+
+                            }
                             holder.tvTimeStamp.text = dateFormat.format(Date(timeLastMsg!!))
                         }
                     }
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-
-                }
-
+                override fun onCancelled(error: DatabaseError) {}
             })
 
         holder.tvName.text = user.userName
         Glide.with(context).load(user.profilePic).placeholder(R.drawable.avatar)
             .into(holder.ivAvatar)
-        holder.itemView.setOnClickListener {
-            val intent = Intent(context, ChatActivity::class.java)
-            intent.putExtra(INTENT_KEY_FOR_NAME, user.userName)
-            intent.putExtra(INTENT_KEY_FOR_PRO_PIC, user.profilePic)
-            intent.putExtra(INTENT_KEY_FOR_UID, user.userId)
-            context.startActivity(intent)
-        }
+        holder.itemView.setOnClickListener(View.OnClickListener {
+            itemClicked.onItemClicked(holder.adapterPosition)
+        })
+//        holder.itemView.setOnClickListener {
+//            val intent = Intent(context, ChatActivity::class.java)
+//            intent.putExtra(INTENT_KEY_FOR_NAME, user.userName)
+//            intent.putExtra(INTENT_KEY_FOR_PRO_PIC, user.profilePic)
+//            intent.putExtra(INTENT_KEY_FOR_UID, user.userId)
+//            context.startActivity(intent)
+//        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

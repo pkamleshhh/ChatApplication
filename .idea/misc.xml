@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/drawable/circle_green.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_attachment.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_photo_alternate_24.xml" value="0.2015625" />
+        <entry key="app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_baseline_group_add_24.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_baseline_help_24.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.2015625" />
@@ -15,15 +16,18 @@
         <entry key="app/src/main/res/drawable/ic_camera.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_chats.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_facebook.xml" value="0.2015625" />
+        <entry key="app/src/main/res/drawable/ic_placeholder.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_send.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/ic_whatsapp_icon_seeklogo_com.xml" value="0.2015625" />
+        <entry key="app/src/main/res/drawable/photo_icon_small.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_background_settings.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_btn_fb_signup.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_btn_google_signup.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_btn_save_setting.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_btn_send.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_btn_signup.xml" value="0.2015625" />
+        <entry key="app/src/main/res/drawable/selector_chat_row.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_et_otp.xml" value="0.2015625" />
         <entry key="app/src/main/res/drawable/selector_et_phone_number.xml" value="0.335" />
         <entry key="app/src/main/res/drawable/selector_et_signup.xml" value="0.2015625" />
@@ -40,6 +44,7 @@
         <entry key="app/src/main/res/layout/chat_rows.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_view_receiver.xml" value="0.335" />
         <entry key="app/src/main/res/layout/item_view_sender.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/layout_dialog.xml" value="0.18541666666666667" />
         <entry key="app/src/main/res/layout/view_status.xml" value="0.18541666666666667" />
         <entry key="app/src/main/res/menu/bnb_menu.xml" value="0.18541666666666667" />
         <entry key="app/src/main/res/menu/chat_menu.xml" value="0.18541666666666667" />

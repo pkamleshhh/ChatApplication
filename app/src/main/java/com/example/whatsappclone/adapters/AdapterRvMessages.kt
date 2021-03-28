@@ -12,6 +12,8 @@ import com.example.whatsappclone.databinding.ItemViewReceiverBinding
 import com.example.whatsappclone.databinding.ItemViewSenderBinding
 import android.R.id.message
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.app.ProgressDialog
 import android.widget.ImageView
 import com.github.pgreze.reactions.ReactionPopup
 import com.github.pgreze.reactions.ReactionsConfigBuilder
@@ -44,12 +46,13 @@ class AdapterRvMessages(
     var context: Context,
     var messagesData: ArrayList<ChatMessages>,
     var senderRoom: String,
-    var receiverRoom: String
+    var receiverRoom: String,
+    var itemClicked: ItemClicked
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
     private var deCipher: Cipher? = null
     private var secretKeySpec: SecretKeySpec? = null
-    var isImageFitToScreen = false
+    private var dialogImageView: Dialog? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == ITEM_SENT) {
             var view =
@@ -137,6 +140,9 @@ class AdapterRvMessages(
                 viewHolder.binding!!.tvSentMessage.visibility = View.GONE
                 Glide.with(context).load(messageObject.messageUrl)
                     .placeholder(R.drawable.ic_placeholder).into(viewHolder.binding!!.ivSentImage)
+                dialogImageView = Dialog(context)
+//                dialogImageView.setContentView(R.layout.layout_dialog)
+
             }
             viewHolder.binding!!.tvSentMessage.text = decryptMessage(messageObject.message)
             val dateFormat = SimpleDateFormat(Constants.DATE_PATTERN)
@@ -148,11 +154,14 @@ class AdapterRvMessages(
             } else {
                 viewHolder.binding!!.ivFeeling.visibility = View.GONE
             }
-
+            holder.itemView.setOnClickListener(View.OnClickListener {
+                itemClicked.onItemClicked(holder.adapterPosition)
+            })
             viewHolder.binding!!.container.setOnTouchListener { p0, p1 ->
 //                popup.onTouch(p0!!, p1!!)
                 false
             }
+
         } else {
             val viewHolder = holder as ReceivedViewHolder
             if (messageObject.message == MESSAGE_PHOTO) {
@@ -207,8 +216,8 @@ class AdapterRvMessages(
         return decryptedString
     }
 
-    private fun fullIamge() {
-
+    interface ItemClicked {
+        fun onItemClicked(position: Int)
     }
 
 }

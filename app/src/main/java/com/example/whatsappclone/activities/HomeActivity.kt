@@ -28,12 +28,16 @@ import android.R
 import androidx.annotation.NonNull
 
 import AdapterRvChatRows
+import android.view.View
 import com.example.whatsappclone.constants.Constants
 import com.example.whatsappclone.constants.Constants.CONTENT_TYPE
+import com.example.whatsappclone.constants.Constants.INTENT_CODE_FOR_HOME_ACTIVITY
 import com.example.whatsappclone.constants.Constants.INTENT_CODE_FOR_STATUS_MEDIA
 import com.example.whatsappclone.constants.Constants.INTENT_KEY_FOR_UID
 import com.example.whatsappclone.constants.Constants.LOADING_MSG
+import com.example.whatsappclone.constants.Constants.NODE_NAME_STATUS
 import com.example.whatsappclone.constants.Constants.NODE_NAME_USERS
+import com.example.whatsappclone.constants.Constants.STATUS_OFFLINE
 import com.example.whatsappclone.constants.Constants.STATUS_ONLINE
 import com.google.firebase.storage.FirebaseStorage
 
@@ -53,7 +57,6 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
-        userId = intent.getStringExtra(INTENT_KEY_FOR_UID)
 
         //Show the progress dialog.
         openDialog()
@@ -104,14 +107,19 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
 
     private fun checkRv() {
         if (usersData.size == 0) {
-            binding!!.rvChatRows
+            binding!!.rvChatRows.visibility = View.GONE
+            binding!!.tvNoUsers.visibility = View.VISIBLE
+        } else {
+            binding!!.rvChatRows.visibility = View.VISIBLE
+            binding!!.tvNoUsers.visibility = View.GONE
         }
     }
 
     private fun init() {
         auth = FirebaseAuth.getInstance()
+        userId = auth!!.uid
         dataBase = FirebaseDatabase.getInstance()
-        adapterRvChatRows = AdapterRvChatRows(this, usersData, auth!!.uid!!)
+        adapterRvChatRows = AdapterRvChatRows(this, usersData, this)
         binding!!.rvChatRows.adapter = adapterRvChatRows
         val layoutManager = LinearLayoutManager(this)
         layoutManager.orientation = RecyclerView.HORIZONTAL
@@ -127,24 +135,23 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
         dialog!!.show()
     }
 
+    private fun setUserStatus(status: String) {
+        dataBase!!.reference.child(NODE_NAME_STATUS).child(userId!!)
+            .setValue(status)
+    }
+
     override fun onResume() {
         super.onResume()
-        val currentId = FirebaseAuth.getInstance().uid
-        dataBase!!.reference.child(Constants.NODE_NAME_STATUS).child(currentId!!)
-            .setValue(STATUS_ONLINE)
+        setUserStatus(STATUS_ONLINE)
     }
 
     override fun onPause() {
         super.onPause()
-        val currentId = FirebaseAuth.getInstance().uid
-        dataBase!!.reference.child(Constants.NODE_NAME_STATUS).child(currentId!!)
-            .setValue(Constants.STATUS_OFFLINE)
+        setUserStatus(STATUS_OFFLINE)
     }
 
     override fun onStop() {
-        val currentId = FirebaseAuth.getInstance().uid
-        dataBase!!.reference.child(Constants.NODE_NAME_STATUS).child(currentId!!)
-            .setValue(Constants.STATUS_OFFLINE)
+        setUserStatus(STATUS_OFFLINE)
         super.onStop()
     }
 
@@ -167,6 +174,11 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
     }
 
     override fun onItemClicked(position: Int) {
-
+        val user = usersData[position]
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra(Constants.INTENT_KEY_FOR_NAME, user.userName)
+        intent.putExtra(Constants.INTENT_KEY_FOR_PRO_PIC, user.profilePic)
+        intent.putExtra(INTENT_KEY_FOR_UID, user.userId)
+        startActivityForResult(intent, INTENT_CODE_FOR_HOME_ACTIVITY)
     }
 }

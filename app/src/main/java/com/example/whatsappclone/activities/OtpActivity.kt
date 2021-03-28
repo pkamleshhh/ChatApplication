@@ -43,7 +43,6 @@ import com.google.android.gms.tasks.Task
 
 import com.google.android.gms.tasks.OnCompleteListener
 
-
 @Suppress("DEPRECATION")
 class OtpActivity : AppCompatActivity() {
     private var binding: ActivityOtpBinding? = null
@@ -61,13 +60,7 @@ class OtpActivity : AppCompatActivity() {
         binding!!.tvVerifyPhone.text = "Verify $phoneNumber"
 
         //Showing the progress dialog
-        dialog = ProgressDialog(this)
-        dialog!!.setMessage(MESSAGE_SENDING_OTP)
-        dialog!!.setCancelable(false)
-        dialog!!.show()
-
-        //Set focusing for the otp boxes.
-        setOtpBoxes()
+        openDialog()
 
         //Setting up firebase authentication.
         setUpAuthentication()
@@ -99,6 +92,12 @@ class OtpActivity : AppCompatActivity() {
         }
     }
 
+    private fun openDialog() {
+        dialog = ProgressDialog(this)
+        dialog!!.setMessage(MESSAGE_SENDING_OTP)
+        dialog!!.setCancelable(false)
+        dialog!!.show()
+    }
 
     private fun setUpAuthentication() {
         auth = FirebaseAuth.getInstance()
@@ -126,10 +125,6 @@ class OtpActivity : AppCompatActivity() {
                 }
             }).build()
         PhoneAuthProvider.verifyPhoneNumber(options)
-    }
-
-    private fun setOtpBoxes() {
-
     }
 
 

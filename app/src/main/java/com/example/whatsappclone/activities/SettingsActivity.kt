@@ -11,8 +11,11 @@ import com.bumptech.glide.Glide
 import com.example.whatsappclone.R
 import com.example.whatsappclone.constants.Constants
 import com.example.whatsappclone.constants.Constants.NODE_NAME_PROFILES
+import com.example.whatsappclone.constants.Constants.NODE_NAME_STATUS
 import com.example.whatsappclone.constants.Constants.NODE_NAME_USERS
 import com.example.whatsappclone.constants.Constants.REQUEST_CODE_SETTING
+import com.example.whatsappclone.constants.Constants.STATUS_OFFLINE
+import com.example.whatsappclone.constants.Constants.STATUS_ONLINE
 import com.example.whatsappclone.constants.Constants.UPDATING_PROFILE_MSG
 import com.example.whatsappclone.databinding.ActivitySettingsBinding
 import com.example.whatsappclone.models.Users
@@ -58,6 +61,16 @@ class SettingsActivity : AppCompatActivity() {
             intent.type = Constants.CONTENT_TYPE
             startActivityForResult(intent, REQUEST_CODE_SETTING)
         }
+
+        binding!!.btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            database!!.reference.child(NODE_NAME_USERS)
+                .child(userId!!).removeValue()
+            database!!.reference.child(NODE_NAME_STATUS)
+                .child(userId!!).removeValue()
+            val intent = Intent(this, PhoneVerificationActivity::class.java)
+            startActivity(intent)
+        }
         binding!!.btnSave.setOnClickListener {
             openDialog(UPDATING_PROFILE_MSG)
             userObject!!.userName = binding!!.etUsername.text.toString()
@@ -70,7 +83,7 @@ class SettingsActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         storageReference.downloadUrl
                             .addOnSuccessListener(OnSuccessListener<Uri> {
-                                userObject!!.profilePic=it.toString()
+                                userObject!!.profilePic = it.toString()
                                 database!!.reference
                                     .child(NODE_NAME_USERS)
                                     .child(userId!!)
@@ -98,6 +111,26 @@ class SettingsActivity : AppCompatActivity() {
         dialog!!.setMessage(msg)
         dialog!!.setCancelable(false)
         dialog!!.show()
+    }
+
+    private fun setUserStatus(status: String) {
+        database!!.reference.child(Constants.NODE_NAME_STATUS).child(userId!!)
+            .setValue(status)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setUserStatus(STATUS_ONLINE)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        setUserStatus(STATUS_OFFLINE)
+    }
+
+    override fun onStop() {
+        setUserStatus(STATUS_OFFLINE)
+        super.onStop()
     }
 
     private fun setParticulars(userObject: Users) {

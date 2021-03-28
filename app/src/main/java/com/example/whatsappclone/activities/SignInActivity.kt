@@ -5,7 +5,7 @@ import android.os.Bundle
 import com.example.whatsappclone.R
 import com.google.firebase.FirebaseApp
 
-class SIgnInActivity : AppCompatActivity() {
+class SignInActivity : AppCompatActivity() {
     private var mAuth:FirebaseApp?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -29,6 +29,7 @@ object Constants {
     const val INTENT_CODE_FOR_STATUS_MEDIA = 10
     const val ENCRYPTION_ALGORITHM="AES"
     const val INTENT_CODE_FOR_ATTACHMENT_MEDIA=11
+    const val INTENT_CODE_FOR_HOME_ACTIVITY=13
     const val MESSAGE_PHOTO="photo"
     const val MESSAGE_FILL="Please fill all the boxes."
     const val MESSAGE_LOGGING_IN="Logging in..."

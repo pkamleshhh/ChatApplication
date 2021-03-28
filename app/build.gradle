@@ -53,5 +53,4 @@ dependencies {
     implementation 'com.devlomi:circularstatusview:1.0.1'
     implementation 'com.chaos.view:pinview:1.4.4'
 //    implementation 'com.android.databinding:viewbinding:4.1.3'
-
 }

@@ -15,12 +15,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import AdapterRvMessages
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
-import android.media.MediaPlayer
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.view.View
-import android.widget.Toast
 import com.example.whatsappclone.constants.Constants.CONTENT_TYPE
 import com.example.whatsappclone.constants.Constants.ENCRYPTION_ALGORITHM
 import com.example.whatsappclone.constants.Constants.ENCRYPTION_KEY
@@ -38,24 +39,17 @@ import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
-import java.util.HashMap
-
-import com.example.whatsappclone.models.UserStatus
-
-import com.google.android.gms.tasks.OnSuccessListener
-
-import com.google.android.gms.tasks.Task
-
-import androidx.annotation.NonNull
 
 import com.google.android.gms.tasks.OnCompleteListener
 
 
-import android.R.attr
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.ActionMode
 import android.view.Menu
+import android.view.Window
+import android.widget.Button
 import com.bumptech.glide.Glide
 import com.example.whatsappclone.R
 import com.example.whatsappclone.constants.Constants.MESSAGE_PHOTO
@@ -64,10 +58,11 @@ import com.example.whatsappclone.constants.Constants.STATUS_OFFLINE
 import com.example.whatsappclone.constants.Constants.STATUS_ONLINE
 import com.example.whatsappclone.constants.Constants.STATUS_TYPING
 import com.example.whatsappclone.constants.Constants.UPLOADING_MSG
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 @Suppress("DEPRECATION")
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
     private var binding: ActivityChatBinding? = null
     private var adapterRvMessages: AdapterRvMessages? = null
     private var messagesData = ArrayList<ChatMessages>()
@@ -97,7 +92,6 @@ class ChatActivity : AppCompatActivity() {
         receiverUid = intent.getStringExtra(Constants.INTENT_KEY_FOR_UID)
         senderUid = FirebaseAuth.getInstance().uid!!
 
-
         // Getting database reference.
         init()
 
@@ -106,6 +100,8 @@ class ChatActivity : AppCompatActivity() {
 
         // Getting the data from server.
         getDataFromServer()
+
+        setUserStatus(STATUS_ONLINE)
 
         binding!!.ivBack.setOnClickListener {
             finish()
@@ -206,7 +202,7 @@ class ChatActivity : AppCompatActivity() {
         binding!!.etTextMessage.text = null
         val randomKey = dataBase!!.reference.push().key
         val date = Date()
-        val messageObject = ChatMessages("", msg, msgUrl, senderUid!!, date.time, 0)
+        val messageObject = ChatMessages(randomKey!!, msg, msgUrl, senderUid!!, date.time, 0)
         dataBase!!.reference.child(NODE_NAME_CHATS)
             .child(senderRoom!!)
             .child(NODE_NAME_MESSAGES)
@@ -233,7 +229,7 @@ class ChatActivity : AppCompatActivity() {
                         messagesData.add(msg)
                     }
                     adapterRvMessages!!.notifyDataSetChanged()
-                    binding!!.rvChatMessages.scrollToPosition(messagesData.size-1)
+                    binding!!.rvChatMessages.scrollToPosition(messagesData.size - 1)
                     dialog!!.dismiss()
                 }
 
@@ -249,7 +245,8 @@ class ChatActivity : AppCompatActivity() {
         receiverRoom = receiverUid + senderUid
         dataBase = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
-        adapterRvMessages = AdapterRvMessages(this, messagesData, senderRoom!!, receiverRoom!!)
+        adapterRvMessages =
+            AdapterRvMessages(this, messagesData, senderRoom!!, receiverRoom!!, this)
         binding!!.rvChatMessages.adapter = adapterRvMessages
         binding!!.tvPersonName.text = userName
         Glide.with(this).load(profilePic).placeholder(R.drawable.avatar).into(binding!!.ivAvatar)
@@ -294,15 +291,17 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        val currentId = FirebaseAuth.getInstance().uid
-        dataBase!!.reference.child(NODE_NAME_STATUS).child(currentId!!)
-            .setValue(STATUS_OFFLINE)
+        setUserStatus(STATUS_OFFLINE)
+    }
+
+    override fun onStop() {
+        setUserStatus(STATUS_OFFLINE)
+        super.onStop()
     }
 
     private fun setUserStatus(status: String) {
         dataBase!!.reference.child(NODE_NAME_STATUS).child(senderUid!!)
             .setValue(status)
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -311,8 +310,43 @@ class ChatActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(com.example.whatsappclone.R.menu.chat_menu, menu)
+        menuInflater.inflate(R.menu.chat_menu, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun openDialog(position: Int) {
+        val customDialog = Dialog(this)
+        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        customDialog.setContentView(R.layout.layout_dialog)
+        customDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        customDialog.window!!.attributes.windowAnimations =
+            R.style.DialogTheme
+        val btnDeleteForMe =
+            customDialog.findViewById<Button>(R.id.btnDeleteForMe)
+        val btnDeleteForAll = customDialog.findViewById<Button>(R.id.btnDeleteForEveryone)
+        btnDeleteForMe!!.setOnClickListener {
+            dataBase!!.reference.child(NODE_NAME_CHATS)
+                .child(senderRoom!!)
+                .child(NODE_NAME_MESSAGES)
+                .child(messagesData[position].messageId).removeValue()
+            customDialog.dismiss()
+        }
+        btnDeleteForAll!!.setOnClickListener {
+            dataBase!!.reference.child(NODE_NAME_CHATS)
+                .child(senderRoom!!)
+                .child(NODE_NAME_MESSAGES)
+                .child(messagesData[position].messageId).removeValue()
+            dataBase!!.reference.child(NODE_NAME_CHATS)
+                .child(receiverRoom!!)
+                .child(NODE_NAME_MESSAGES)
+                .child(messagesData[position].messageId).removeValue()
+            customDialog.dismiss()
+        }
+        customDialog.show()
+    }
+
+    override fun onItemClicked(position: Int) {
+        openDialog(position)
     }
 
 }
