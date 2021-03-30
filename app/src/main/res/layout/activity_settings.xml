@@ -31,10 +31,10 @@
 
     <ImageView
         android:id="@+id/ivPhotoChange"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/_30dp"
+        android:layout_height="@dimen/_30dp"
         android:background="?selectableItemBackground"
-        android:src="@drawable/ic_baseline_add_photo_alternate_24"
+        android:src="@drawable/ic_baseline_add_a_photo_24"
         app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
         app:layout_constraintEnd_toEndOf="@+id/ivAvatar" />
 
@@ -43,10 +43,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10dp"
+        android:weightSum="3"
         app:layout_constraintTop_toBottomOf="@id/ivAvatar">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
@@ -54,9 +55,9 @@
             android:textColor="@color/lightGrey"
             android:textSize="@dimen/_18sp" />
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etUsername"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_10dp"
             android:layout_weight="2"
@@ -66,10 +67,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:weightSum="3"
         app:layout_constraintTop_toBottomOf="@id/containerUsername">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
@@ -77,12 +79,13 @@
             android:textColor="@color/lightGrey"
             android:textSize="@dimen/_18sp" />
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etAbout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_10dp"
-            android:layout_weight="2" />
+            android:layout_weight="2"
+            android:textColor="@color/lightGrey" />
     </LinearLayout>
 
     <Button
@@ -120,14 +123,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15dp"
+            android:background="?selectableItemBackground"
             android:drawableStart="@drawable/ic_baseline_lock_24"
             android:drawablePadding="@dimen/_5dp"
-            android:background="?selectableItemBackground"
             android:gravity="center"
             android:text="@string/privacy_policy"
             android:textColor="@color/black"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvAboutUs"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -143,8 +148,9 @@
             android:text="@string/about_us"
             android:textColor="@color/black"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvInviteAFriend"
             app:layout_constraintStart_toStartOf="@id/tvPrivacyPolicy"
-            app:layout_constraintTop_toBottomOf="@id/tvPrivacyPolicy" />
+            app:layout_constraintTop_toBottomOf="@+id/tvPrivacyPolicy" />
 
         <TextView
             android:id="@+id/tvInviteAFriend"
@@ -158,8 +164,9 @@
             android:text="@string/invite_a_friend"
             android:textColor="@color/black"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvNotification"
             app:layout_constraintStart_toStartOf="@id/tvPrivacyPolicy"
-            app:layout_constraintTop_toBottomOf="@id/tvAboutUs" />
+            app:layout_constraintTop_toBottomOf="@+id/tvAboutUs" />
 
         <TextView
             android:id="@+id/tvNotification"
@@ -173,33 +180,36 @@
             android:text="@string/notification"
             android:textColor="@color/black"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvHelp"
             app:layout_constraintStart_toStartOf="@id/tvPrivacyPolicy"
-            app:layout_constraintTop_toBottomOf="@id/tvInviteAFriend" />
+            app:layout_constraintTop_toBottomOf="@+id/tvInviteAFriend" />
 
         <TextView
             android:id="@+id/tvHelp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5dp"
+            android:background="?selectableItemBackground"
             android:drawableStart="@drawable/ic_baseline_help_24"
             android:drawablePadding="@dimen/_5dp"
-            android:background="?selectableItemBackground"
             android:gravity="center"
+            android:layout_marginBottom="@dimen/_30dp"
             android:text="@string/help"
             android:textColor="@color/black"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/tvPrivacyPolicy"
-            app:layout_constraintTop_toBottomOf="@id/tvNotification" />
+            app:layout_constraintTop_toBottomOf="@+id/tvNotification" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/logout"
+        android:layout_height="35dp"
+        android:layout_margin="@dimen/_10dp"
         android:background="@drawable/selector_btn_save_setting"
-        />
+        android:text="@string/logout"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

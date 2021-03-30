@@ -67,6 +67,10 @@ class HomeActivity : AppCompatActivity(), AdapterRvChatRows.ItemClicked {
         //Get server data.
         getServerData()
 
+
+        //Set user status as online
+        setUserStatus(STATUS_ONLINE)
+
         //Bottom Navigation Listener.
         binding!!.bnbHome.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {

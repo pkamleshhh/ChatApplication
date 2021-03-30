@@ -40,6 +40,7 @@ import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.SecretKeySpec
 import kotlin.collections.ArrayList
 import android.widget.LinearLayout
+import com.example.whatsappclone.constants.Constants.ENCRYPTION_ALGORITHM
 
 
 class AdapterRvMessages(
@@ -52,7 +53,6 @@ class AdapterRvMessages(
     RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
     private var deCipher: Cipher? = null
     private var secretKeySpec: SecretKeySpec? = null
-    private var dialogImageView: Dialog? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == ITEM_SENT) {
             var view =
@@ -140,8 +140,6 @@ class AdapterRvMessages(
                 viewHolder.binding!!.tvSentMessage.visibility = View.GONE
                 Glide.with(context).load(messageObject.messageUrl)
                     .placeholder(R.drawable.ic_placeholder).into(viewHolder.binding!!.ivSentImage)
-                dialogImageView = Dialog(context)
-//                dialogImageView.setContentView(R.layout.layout_dialog)
 
             }
             viewHolder.binding!!.tvSentMessage.text = decryptMessage(messageObject.message)
@@ -183,6 +181,9 @@ class AdapterRvMessages(
             } else {
                 viewHolder.binding!!.ivFeeling.visibility = View.GONE
             }
+            holder.itemView.setOnClickListener(View.OnClickListener {
+                itemClicked.onItemClicked(holder.adapterPosition)
+            })
             viewHolder.binding!!.container.setOnTouchListener { p0, p1 ->
 //                popup.onTouch(p0!!, p1!!)
                 false
@@ -192,7 +193,7 @@ class AdapterRvMessages(
 
     private fun decryptMessage(msg: String): String {
         try {
-            deCipher = Cipher.getInstance(Constants.ENCRYPTION_ALGORITHM)
+            deCipher = Cipher.getInstance(ENCRYPTION_ALGORITHM)
         } catch (e: NoSuchAlgorithmException) {
             e.printStackTrace()
         } catch (e: NoSuchPaddingException) {

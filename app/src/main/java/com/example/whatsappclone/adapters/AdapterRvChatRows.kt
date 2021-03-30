@@ -96,13 +96,6 @@ class AdapterRvChatRows(
         holder.itemView.setOnClickListener(View.OnClickListener {
             itemClicked.onItemClicked(holder.adapterPosition)
         })
-//        holder.itemView.setOnClickListener {
-//            val intent = Intent(context, ChatActivity::class.java)
-//            intent.putExtra(INTENT_KEY_FOR_NAME, user.userName)
-//            intent.putExtra(INTENT_KEY_FOR_PRO_PIC, user.profilePic)
-//            intent.putExtra(INTENT_KEY_FOR_UID, user.userId)
-//            context.startActivity(intent)
-//        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

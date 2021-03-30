@@ -30,6 +30,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import java.lang.Exception
 import java.util.*
 
 @Suppress("DEPRECATION")
@@ -56,7 +57,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding!!.ivPhotoChange.setOnClickListener {
-            var intent: Intent? = Intent()
+            val intent: Intent? = Intent()
             intent!!.action = Intent.ACTION_GET_CONTENT
             intent.type = Constants.CONTENT_TYPE
             startActivityForResult(intent, REQUEST_CODE_SETTING)
@@ -75,34 +76,48 @@ class SettingsActivity : AppCompatActivity() {
             openDialog(UPDATING_PROFILE_MSG)
             userObject!!.userName = binding!!.etUsername.text.toString()
             userObject!!.userStatus = binding!!.etAbout.text.toString()
-            storage = FirebaseStorage.getInstance()
-            var storageReference =
-                storage!!.reference.child(NODE_NAME_PROFILES).child(userId!!)
-            storageReference.putFile(fileUri!!)
-                .addOnCompleteListener(OnCompleteListener<UploadTask.TaskSnapshot?> { task ->
-                    if (task.isSuccessful) {
-                        storageReference.downloadUrl
-                            .addOnSuccessListener(OnSuccessListener<Uri> {
-                                userObject!!.profilePic = it.toString()
-                                database!!.reference
-                                    .child(NODE_NAME_USERS)
-                                    .child(userId!!)
-                                    .setValue(userObject)
-                                    .addOnSuccessListener {
-                                        dialog!!.dismiss()
-                                    }
-                            })
+            if (fileUri == null) {
+                database!!.reference
+                    .child(NODE_NAME_USERS)
+                    .child(userId!!)
+                    .setValue(userObject)
+                    .addOnSuccessListener {
+                        dialog!!.dismiss()
                     }
-                })
+            } else {
+                storage = FirebaseStorage.getInstance()
+                val storageReference =
+                    storage!!.reference.child(NODE_NAME_PROFILES).child(userId!!)
+                storageReference.putFile(fileUri!!)
+                    .addOnCompleteListener(OnCompleteListener<UploadTask.TaskSnapshot?> { task ->
+                        if (task.isSuccessful) {
+                            storageReference.downloadUrl
+                                .addOnSuccessListener(OnSuccessListener<Uri> {
+                                    userObject!!.profilePic = it.toString()
+                                    database!!.reference
+                                        .child(NODE_NAME_USERS)
+                                        .child(userId!!)
+                                        .setValue(userObject)
+                                        .addOnSuccessListener {
+                                            dialog!!.dismiss()
+                                        }
+                                })
+                        }
+                    })
+            }
+
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (data!!.data != null) {
-            fileUri = data!!.data!!
-            dataChanged = true
-            binding!!.ivAvatar.setImageURI(fileUri)
+        if (data!= null) {
+            try {
+                fileUri = data.data!!
+                dataChanged = true
+                binding!!.ivAvatar.setImageURI(fileUri)
+            } catch (e: Exception) {
+            }
         }
     }
 

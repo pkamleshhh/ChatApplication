@@ -7,12 +7,8 @@ import com.example.whatsappclone.constants.Constants
 import com.example.whatsappclone.databinding.ActivityChatBinding
 import com.example.whatsappclone.models.ChatMessages
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 import kotlin.collections.ArrayList
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import AdapterRvMessages
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -20,6 +16,8 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.session.MediaSession
+import android.media.session.MediaSession.Token
 import android.net.Uri
 import android.view.View
 import com.example.whatsappclone.constants.Constants.CONTENT_TYPE
@@ -39,10 +37,7 @@ import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
-
 import com.google.android.gms.tasks.OnCompleteListener
-
-
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
@@ -59,6 +54,9 @@ import com.example.whatsappclone.constants.Constants.STATUS_ONLINE
 import com.example.whatsappclone.constants.Constants.STATUS_TYPING
 import com.example.whatsappclone.constants.Constants.UPLOADING_MSG
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.database.*
+import com.google.firebase.iid.FirebaseInstanceId
+import java.lang.Exception
 
 
 @Suppress("DEPRECATION")
@@ -69,6 +67,7 @@ class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
     private var senderRoom: String? = null
     private var receiverRoom: String? = null
     private var dataBase: FirebaseDatabase? = null
+    private var dataBaseRef: DatabaseReference? = null
     private var senderUid: String? = null
     private var receiverUid: String? = null
     private var dialog: ProgressDialog? = null
@@ -141,6 +140,7 @@ class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
 
         })
         supportActionBar!!.setDisplayShowTitleEnabled(false)
+//        updateToken(FirebaseInstanceId.getInstance().token!!)
     }
 
     private fun getUserStatus() {
@@ -169,23 +169,26 @@ class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == INTENT_CODE_FOR_ATTACHMENT_MEDIA) {
-            if (data!!.data != null) {
-                val selectedImage: Uri = data!!.data!!
-                val calender: Calendar = Calendar.getInstance()
-                val storageReference = storage!!.reference.child(NODE_NAME_CHATS)
-                    .child(calender.timeInMillis.toString())
-                openDialog(UPLOADING_MSG)
-                storageReference.putFile(selectedImage)
-                    .addOnCompleteListener(OnCompleteListener<UploadTask.TaskSnapshot?> { task ->
-                        dialog!!.dismiss()
-                        if (task.isSuccessful) {
-                            storageReference.downloadUrl.addOnSuccessListener { p0 ->
-                                val filePath = p0.toString()
-
-                                updateChat(MESSAGE_PHOTO, filePath)
+            if (data != null) {
+                try {
+                    val selectedImage: Uri = data.data!!
+                    val calender: Calendar = Calendar.getInstance()
+                    val storageReference = storage!!.reference.child(NODE_NAME_CHATS)
+                        .child(calender.timeInMillis.toString())
+                    openDialog(UPLOADING_MSG)
+                    storageReference.putFile(selectedImage)
+                        .addOnCompleteListener(OnCompleteListener<UploadTask.TaskSnapshot?> { task ->
+                            dialog!!.dismiss()
+                            if (task.isSuccessful) {
+                                storageReference.downloadUrl.addOnSuccessListener { p0 ->
+                                    val filePath = p0.toString()
+                                    updateChat(MESSAGE_PHOTO, filePath)
+                                }
                             }
-                        }
-                    })
+                        })
+                } catch (e: Exception) {
+
+                }
             }
         }
     }
@@ -197,8 +200,12 @@ class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
         dialog!!.show()
     }
 
-    private fun updateChat(msg: String, msgUrl: String) {
+//    private fun updateToken(token: String) {
+//        val token = com.example.whatsappclone.notification.Token(token!!)
+//        dataBaseRef!!.child(FirebaseAuth.getInstance().uid!!).setValue(token)
+//    }
 
+    private fun updateChat(msg: String, msgUrl: String) {
         binding!!.etTextMessage.text = null
         val randomKey = dataBase!!.reference.push().key
         val date = Date()
@@ -244,6 +251,7 @@ class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
         senderRoom = senderUid + receiverUid
         receiverRoom = receiverUid + senderUid
         dataBase = FirebaseDatabase.getInstance()
+        dataBaseRef = FirebaseDatabase.getInstance().getReference("Token")
         storage = FirebaseStorage.getInstance()
         adapterRvMessages =
             AdapterRvMessages(this, messagesData, senderRoom!!, receiverRoom!!, this)
@@ -324,6 +332,9 @@ class ChatActivity : AppCompatActivity(), AdapterRvMessages.ItemClicked {
         val btnDeleteForMe =
             customDialog.findViewById<Button>(R.id.btnDeleteForMe)
         val btnDeleteForAll = customDialog.findViewById<Button>(R.id.btnDeleteForEveryone)
+        if (messagesData[position].senderId != FirebaseAuth.getInstance().uid) {
+            btnDeleteForAll.visibility = View.GONE
+        }
         btnDeleteForMe!!.setOnClickListener {
             dataBase!!.reference.child(NODE_NAME_CHATS)
                 .child(senderRoom!!)
